@@ -63,7 +63,7 @@ void HistoryViewManager::sendTextMessage(const QString &msg)
 	auto view = views_[room.id()];
 
 	view->addUserTextMessage(msg, client_->transactionId());
-	/* client_->sendTextMessage(room.id(), msg); */
+	client_->sendTextMessage(room.id(), msg);
 }
 
 void HistoryViewManager::clearAll()

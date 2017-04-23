@@ -19,12 +19,23 @@
 #define TEXT_INPUT_WIDGET_H
 
 #include <QHBoxLayout>
-#include <QTextEdit>
 #include <QPaintEvent>
+#include <QTextEdit>
 #include <QWidget>
 
 #include "EmojiPickButton.h"
 #include "FlatButton.h"
+
+class FilteredTextEdit : public QTextEdit
+{
+	Q_OBJECT
+public:
+	explicit FilteredTextEdit(QWidget *parent = nullptr);
+	void keyPressEvent(QKeyEvent *event);
+
+signals:
+	void enterPressed();
+};
 
 class TextInputWidget : public QWidget
 {
@@ -48,7 +59,7 @@ protected:
 
 private:
 	QHBoxLayout *top_layout_;
-	QTextEdit *input_;
+	FilteredTextEdit *input_;
 
 	FlatButton *send_file_button_;
 	FlatButton *send_message_button_;

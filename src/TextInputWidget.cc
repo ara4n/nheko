@@ -22,6 +22,19 @@
 
 #include "TextInputWidget.h"
 
+FilteredTextEdit::FilteredTextEdit(QWidget *parent)
+    : QTextEdit(parent)
+{
+}
+
+void FilteredTextEdit::keyPressEvent(QKeyEvent *event)
+{
+	if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter)
+		emit enterPressed();
+	else
+		QTextEdit::keyPressEvent(event);
+}
+
 TextInputWidget::TextInputWidget(QWidget *parent)
     : QWidget(parent)
 {
@@ -44,7 +57,7 @@ TextInputWidget::TextInputWidget(QWidget *parent)
 	send_file_button_->setIcon(send_file_icon);
 	send_file_button_->setIconSize(QSize(24, 24));
 
-	input_ = new QTextEdit(this);
+	input_ = new FilteredTextEdit(this);
 	input_->setFixedHeight(45);
 	input_->setPlaceholderText("Write a message...");
 	input_->setStyleSheet("color: #333333; font-size: 13px; border-radius: 0; padding-top: 10px;");
@@ -75,7 +88,7 @@ TextInputWidget::TextInputWidget(QWidget *parent)
 	setLayout(top_layout_);
 
 	connect(send_message_button_, SIGNAL(clicked()), this, SLOT(onSendButtonClicked()));
-	connect(input_, SIGNAL(returnPressed()), send_message_button_, SIGNAL(clicked()));
+	connect(input_, SIGNAL(enterPressed()), send_message_button_, SIGNAL(clicked()));
 	connect(emoji_button_, SIGNAL(emojiSelected(const QString &)), this, SLOT(addSelectedEmoji(const QString &)));
 }
 
