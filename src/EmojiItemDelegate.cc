@@ -15,46 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef EMOJI_PANEL_H
-#define EMOJI_PANEL_H
+#include <QDebug>
+#include <QPainter>
 
-#include <QFrame>
-#include <QGraphicsOpacityEffect>
-#include <QPropertyAnimation>
-#include <QScrollArea>
-#include <QWidget>
+#include "EmojiItemDelegate.h"
 
-#include "EmojiCategory.h"
-#include "EmojiProvider.h"
-
-class EmojiPanel : public QFrame
+EmojiItemDelegate::EmojiItemDelegate(QObject *parent)
+    : QStyledItemDelegate(parent)
 {
-	Q_OBJECT
+	data_ = new Emoji;
+}
 
-public:
-	EmojiPanel(QWidget *parent = nullptr);
+EmojiItemDelegate::~EmojiItemDelegate()
+{
+	delete data_;
+}
 
-	void fadeOut();
-	void fadeIn();
+void EmojiItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+	Q_UNUSED(index);
 
-signals:
-	void mouseLeft();
-	void emojiSelected(const QString &emoji);
+	QStyleOptionViewItem viewOption(option);
 
-protected:
-	void leaveEvent(QEvent *event);
+	auto emoji = index.data(Qt::UserRole).toString();
 
-private:
-	void showEmojiCategory(const EmojiCategory *category);
+	QFont font("Emoji One");
+	font.setPixelSize(19);
 
-	QPropertyAnimation *animation_;
-	QGraphicsOpacityEffect *opacity_;
-
-	EmojiProvider emoji_provider_;
-
-	QScrollArea *scroll_area_;
-
-	const int category_icon_size_ = 20;
-};
-
-#endif  // EMOJI_PANEL_H
+	painter->setFont(font);
+	painter->drawText(viewOption.rect, emoji);
+}

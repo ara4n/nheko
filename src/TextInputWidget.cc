@@ -44,9 +44,10 @@ TextInputWidget::TextInputWidget(QWidget *parent)
 	send_file_button_->setIcon(send_file_icon);
 	send_file_button_->setIconSize(QSize(24, 24));
 
-	input_ = new QLineEdit(this);
+	input_ = new QTextEdit(this);
+	input_->setFixedHeight(45);
 	input_->setPlaceholderText("Write a message...");
-	input_->setStyleSheet("color: black; font-size: 10pt; border-radius: 0; padding: 2px; margin-bottom: 4px;");
+	input_->setStyleSheet("color: #333333; font-size: 13px; border-radius: 0; padding-top: 10px;");
 
 	send_message_button_ = new FlatButton(this);
 	send_message_button_->setCursor(Qt::PointingHandCursor);
@@ -80,29 +81,35 @@ TextInputWidget::TextInputWidget(QWidget *parent)
 
 void TextInputWidget::addSelectedEmoji(const QString &emoji)
 {
-	auto txt = input_->text();
-	auto pos = input_->cursorPosition();
+	QTextCursor cursor = input_->textCursor();
 
-	txt += emoji;
-	pos += 1;
+	QFont emoji_font("Emoji One");
+	emoji_font.setPixelSize(18);
 
-	input_->setText(txt);
-	input_->setCursorPosition(pos);
+	QFont text_font("Open Sans");
+	text_font.setPixelSize(13);
+
+	QTextCharFormat charfmt;
+	charfmt.setFont(emoji_font);
+	input_->setCurrentCharFormat(charfmt);
+
+	input_->insertPlainText(emoji);
+	cursor.movePosition(QTextCursor::End);
+
+	charfmt.setFont(text_font);
+	input_->setCurrentCharFormat(charfmt);
+
+	input_->show();
 }
 
 void TextInputWidget::onSendButtonClicked()
 {
-	auto msg_text = input_->text().trimmed();
+	auto msg_text = input_->document()->toPlainText().trimmed();
 
 	if (msg_text.isEmpty())
 		return;
 
-	auto flag = emoji_provider_.flags[0].unicode;
-	emit sendTextMessage(flag);
-	auto people = emoji_provider_.people[0].unicode;
-	emit sendTextMessage(people);
-	auto nature = emoji_provider_.nature[0].unicode;
-	emit sendTextMessage(nature);
+	emit sendTextMessage(msg_text);
 
 	input_->clear();
 }

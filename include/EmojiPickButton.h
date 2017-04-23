@@ -30,6 +30,9 @@ class EmojiPickButton : public FlatButton
 public:
 	explicit EmojiPickButton(QWidget *parent = nullptr);
 
+signals:
+	void emojiSelected(const QString &emoji);
+
 protected:
 	void enterEvent(QEvent *e) override;
 	void leaveEvent(QEvent *e) override;

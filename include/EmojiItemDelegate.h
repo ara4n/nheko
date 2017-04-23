@@ -15,46 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef EMOJI_PANEL_H
-#define EMOJI_PANEL_H
+#ifndef EMOJI_ITEM_DELEGATE_H
+#define EMOJI_ITEM_DELEGATE_H
 
-#include <QFrame>
-#include <QGraphicsOpacityEffect>
-#include <QPropertyAnimation>
-#include <QScrollArea>
-#include <QWidget>
+#include <QModelIndex>
+#include <QStandardItemModel>
+#include <QStyledItemDelegate>
 
-#include "EmojiCategory.h"
 #include "EmojiProvider.h"
 
-class EmojiPanel : public QFrame
+class EmojiItemDelegate : public QStyledItemDelegate
 {
 	Q_OBJECT
 
 public:
-	EmojiPanel(QWidget *parent = nullptr);
+	explicit EmojiItemDelegate(QObject *parent = nullptr);
+	~EmojiItemDelegate();
 
-	void fadeOut();
-	void fadeIn();
-
-signals:
-	void mouseLeft();
-	void emojiSelected(const QString &emoji);
-
-protected:
-	void leaveEvent(QEvent *event);
+	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 
 private:
-	void showEmojiCategory(const EmojiCategory *category);
-
-	QPropertyAnimation *animation_;
-	QGraphicsOpacityEffect *opacity_;
-
-	EmojiProvider emoji_provider_;
-
-	QScrollArea *scroll_area_;
-
-	const int category_icon_size_ = 20;
+	Emoji *data_;
 };
 
-#endif  // EMOJI_PANEL_H
+#endif  // EMOJI_ITEM_DELEGATE_H

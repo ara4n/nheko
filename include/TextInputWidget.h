@@ -19,12 +19,11 @@
 #define TEXT_INPUT_WIDGET_H
 
 #include <QHBoxLayout>
-#include <QLineEdit>
+#include <QTextEdit>
 #include <QPaintEvent>
 #include <QWidget>
 
 #include "EmojiPickButton.h"
-#include "EmojiProvider.h"
 #include "FlatButton.h"
 
 class TextInputWidget : public QWidget
@@ -49,13 +48,11 @@ protected:
 
 private:
 	QHBoxLayout *top_layout_;
-	QLineEdit *input_;
+	QTextEdit *input_;
 
 	FlatButton *send_file_button_;
 	FlatButton *send_message_button_;
 	EmojiPickButton *emoji_button_;
-
-	EmojiProvider emoji_provider_;
 };
 
 #endif  // TEXT_INPUT_WIDGET_H

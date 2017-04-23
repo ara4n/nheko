@@ -142,10 +142,10 @@ QString HistoryViewItem::replaceEmoji(const QString &body)
 	QString fmtBody = "";
 
 	for (auto &c : body) {
-		auto code = c.unicode();
+		int code = c.unicode();
 
 		// TODO: Be more precise here.
-		if (code > 10000)
+		if (code > 9000)
 			fmtBody += "<span style=\"font-family: Emoji One; font-size: 16px\">" + QString(c) + "</span>";
 		else
 			fmtBody += c;

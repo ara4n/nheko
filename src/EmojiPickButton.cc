@@ -21,6 +21,7 @@
 
 EmojiPickButton::EmojiPickButton(QWidget *parent)
     : FlatButton(parent)
+    , panel_{nullptr}
 {
 }
 
@@ -28,7 +29,10 @@ void EmojiPickButton::enterEvent(QEvent *e)
 {
 	Q_UNUSED(e);
 
-	panel_ = new EmojiPanel();
+	if (panel_ == nullptr) {
+		panel_ = new EmojiPanel(this);
+		connect(panel_, &EmojiPanel::emojiSelected, this, &EmojiPickButton::emojiSelected);
+	}
 
 	QPoint pos(rect().x(), rect().y());
 	pos = this->mapToGlobal(pos);

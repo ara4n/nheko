@@ -15,46 +15,48 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef EMOJI_PANEL_H
-#define EMOJI_PANEL_H
+#ifndef EMOJI_CATEGORY_H
+#define EMOJI_CATEGORY_H
 
-#include <QFrame>
-#include <QGraphicsOpacityEffect>
-#include <QPropertyAnimation>
-#include <QScrollArea>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QListView>
+#include <QStandardItemModel>
+#include <QVBoxLayout>
 #include <QWidget>
 
-#include "EmojiCategory.h"
+#include "EmojiItemDelegate.h"
 #include "EmojiProvider.h"
 
-class EmojiPanel : public QFrame
+class EmojiCategory : public QWidget
 {
 	Q_OBJECT
 
 public:
-	EmojiPanel(QWidget *parent = nullptr);
-
-	void fadeOut();
-	void fadeIn();
+	EmojiCategory(QString category, QList<Emoji> emoji, QWidget *parent = nullptr);
+	~EmojiCategory();
 
 signals:
-	void mouseLeft();
 	void emojiSelected(const QString &emoji);
 
-protected:
-	void leaveEvent(QEvent *event);
+private slots:
+	inline void clickIndex(const QModelIndex &);
 
 private:
-	void showEmojiCategory(const EmojiCategory *category);
+	QVBoxLayout *mainLayout_;
 
-	QPropertyAnimation *animation_;
-	QGraphicsOpacityEffect *opacity_;
+	QStandardItemModel *itemModel_;
+	QListView *emojiListView_;
 
-	EmojiProvider emoji_provider_;
+	Emoji *data_;
+	EmojiItemDelegate *delegate_;
 
-	QScrollArea *scroll_area_;
-
-	const int category_icon_size_ = 20;
+	QLabel *category_;
 };
 
-#endif  // EMOJI_PANEL_H
+inline void EmojiCategory::clickIndex(const QModelIndex &index)
+{
+	emit emojiSelected(index.data(Qt::UserRole).toString());
+}
+
+#endif  // EMOJI_CATEGORY_H
