@@ -16,6 +16,7 @@
  */
 
 #include <QDebug>
+#include <QFile>
 #include <QPainter>
 #include <QStyleOption>
 
@@ -31,8 +32,8 @@ TextInputWidget::TextInputWidget(QWidget *parent)
 	setStyleSheet("background-color: #f8fbfe; height: 45px;");
 
 	top_layout_ = new QHBoxLayout();
-	top_layout_->setSpacing(6);
-	top_layout_->setContentsMargins(6, 0, 0, 0);
+	top_layout_->setSpacing(0);
+	top_layout_->setMargin(0);
 
 	send_file_button_ = new FlatButton(this);
 	send_file_button_->setCursor(Qt::PointingHandCursor);
@@ -56,14 +57,37 @@ TextInputWidget::TextInputWidget(QWidget *parent)
 	send_message_button_->setIcon(send_message_icon);
 	send_message_button_->setIconSize(QSize(24, 24));
 
+	emoji_button_ = new EmojiPickButton(this);
+	emoji_button_->setCursor(Qt::PointingHandCursor);
+	emoji_button_->setForegroundColor(QColor("#acc7dc"));
+
+	QIcon emoji_icon;
+	emoji_icon.addFile(":/icons/icons/smile.png", QSize(), QIcon::Normal, QIcon::Off);
+	emoji_button_->setIcon(emoji_icon);
+	emoji_button_->setIconSize(QSize(24, 24));
+
 	top_layout_->addWidget(send_file_button_);
 	top_layout_->addWidget(input_);
+	top_layout_->addWidget(emoji_button_);
 	top_layout_->addWidget(send_message_button_);
 
 	setLayout(top_layout_);
 
 	connect(send_message_button_, SIGNAL(clicked()), this, SLOT(onSendButtonClicked()));
 	connect(input_, SIGNAL(returnPressed()), send_message_button_, SIGNAL(clicked()));
+	connect(emoji_button_, SIGNAL(emojiSelected(const QString &)), this, SLOT(addSelectedEmoji(const QString &)));
+}
+
+void TextInputWidget::addSelectedEmoji(const QString &emoji)
+{
+	auto txt = input_->text();
+	auto pos = input_->cursorPosition();
+
+	txt += emoji;
+	pos += 1;
+
+	input_->setText(txt);
+	input_->setCursorPosition(pos);
 }
 
 void TextInputWidget::onSendButtonClicked()
@@ -73,7 +97,13 @@ void TextInputWidget::onSendButtonClicked()
 	if (msg_text.isEmpty())
 		return;
 
-	emit sendTextMessage(msg_text);
+	auto flag = emoji_provider_.flags[0].unicode;
+	emit sendTextMessage(flag);
+	auto people = emoji_provider_.people[0].unicode;
+	emit sendTextMessage(people);
+	auto nature = emoji_provider_.nature[0].unicode;
+	emit sendTextMessage(nature);
+
 	input_->clear();
 }
 

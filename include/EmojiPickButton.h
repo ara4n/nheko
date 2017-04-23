@@ -15,47 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TEXT_INPUT_WIDGET_H
-#define TEXT_INPUT_WIDGET_H
+#ifndef EMOJI_PICK_BUTTON_H
+#define EMOJI_PICK_BUTTON_H
 
-#include <QHBoxLayout>
-#include <QLineEdit>
-#include <QPaintEvent>
+#include <QEvent>
 #include <QWidget>
 
-#include "EmojiPickButton.h"
-#include "EmojiProvider.h"
+#include "EmojiPanel.h"
 #include "FlatButton.h"
 
-class TextInputWidget : public QWidget
+class EmojiPickButton : public FlatButton
 {
 	Q_OBJECT
-
 public:
-	TextInputWidget(QWidget *parent = 0);
-	~TextInputWidget();
-
-public slots:
-	void onSendButtonClicked();
-
-private slots:
-	void addSelectedEmoji(const QString &emoji);
-
-signals:
-	void sendTextMessage(QString msg);
+	explicit EmojiPickButton(QWidget *parent = nullptr);
 
 protected:
-	void paintEvent(QPaintEvent *event) override;
+	void enterEvent(QEvent *e) override;
+	void leaveEvent(QEvent *e) override;
 
 private:
-	QHBoxLayout *top_layout_;
-	QLineEdit *input_;
+	// Vertical distance from panel's bottom.
+	int vertical_distance_ = 10;
 
-	FlatButton *send_file_button_;
-	FlatButton *send_message_button_;
-	EmojiPickButton *emoji_button_;
+	// Horizontal distance from panel's bottom right corner.
+	int horizontal_distance_ = 70;
 
-	EmojiProvider emoji_provider_;
+	EmojiPanel *panel_;
 };
 
-#endif  // TEXT_INPUT_WIDGET_H
+#endif  // EMOJI_PICK_BUTTON_H

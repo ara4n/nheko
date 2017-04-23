@@ -15,47 +15,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TEXT_INPUT_WIDGET_H
-#define TEXT_INPUT_WIDGET_H
+#ifndef EMOJI_PANEL_H
+#define EMOJI_PANEL_H
 
-#include <QHBoxLayout>
-#include <QLineEdit>
-#include <QPaintEvent>
+#include <QFrame>
+#include <QGraphicsOpacityEffect>
+#include <QPropertyAnimation>
 #include <QWidget>
 
-#include "EmojiPickButton.h"
 #include "EmojiProvider.h"
-#include "FlatButton.h"
 
-class TextInputWidget : public QWidget
+class EmojiPanel : public QFrame
 {
 	Q_OBJECT
 
 public:
-	TextInputWidget(QWidget *parent = 0);
-	~TextInputWidget();
+	EmojiPanel(QWidget *parent = nullptr);
 
-public slots:
-	void onSendButtonClicked();
-
-private slots:
-	void addSelectedEmoji(const QString &emoji);
+	void fadeOut();
+	void fadeIn();
 
 signals:
-	void sendTextMessage(QString msg);
+	void mouseLeft();
 
 protected:
-	void paintEvent(QPaintEvent *event) override;
+	void leaveEvent(QEvent *event);
 
 private:
-	QHBoxLayout *top_layout_;
-	QLineEdit *input_;
-
-	FlatButton *send_file_button_;
-	FlatButton *send_message_button_;
-	EmojiPickButton *emoji_button_;
+	QPropertyAnimation *animation_;
+	QGraphicsOpacityEffect *opacity_;
 
 	EmojiProvider emoji_provider_;
 };
 
-#endif  // TEXT_INPUT_WIDGET_H
+#endif  // EMOJI_PANEL_H

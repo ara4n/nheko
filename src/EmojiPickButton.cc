@@ -15,47 +15,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TEXT_INPUT_WIDGET_H
-#define TEXT_INPUT_WIDGET_H
-
-#include <QHBoxLayout>
-#include <QLineEdit>
-#include <QPaintEvent>
-#include <QWidget>
+#include <QDebug>
 
 #include "EmojiPickButton.h"
-#include "EmojiProvider.h"
-#include "FlatButton.h"
 
-class TextInputWidget : public QWidget
+EmojiPickButton::EmojiPickButton(QWidget *parent)
+    : FlatButton(parent)
 {
-	Q_OBJECT
+}
 
-public:
-	TextInputWidget(QWidget *parent = 0);
-	~TextInputWidget();
+void EmojiPickButton::enterEvent(QEvent *e)
+{
+	Q_UNUSED(e);
 
-public slots:
-	void onSendButtonClicked();
+	panel_ = new EmojiPanel();
 
-private slots:
-	void addSelectedEmoji(const QString &emoji);
+	QPoint pos(rect().x(), rect().y());
+	pos = this->mapToGlobal(pos);
 
-signals:
-	void sendTextMessage(QString msg);
+	auto panel_size = panel_->sizeHint();
 
-protected:
-	void paintEvent(QPaintEvent *event) override;
+	auto x = pos.x() - panel_size.width() + horizontal_distance_;
+	auto y = pos.y() - panel_size.height() - vertical_distance_;
 
-private:
-	QHBoxLayout *top_layout_;
-	QLineEdit *input_;
+	panel_->move(x, y);
+	panel_->fadeIn();
+	panel_->show();
+}
 
-	FlatButton *send_file_button_;
-	FlatButton *send_message_button_;
-	EmojiPickButton *emoji_button_;
+void EmojiPickButton::leaveEvent(QEvent *e)
+{
+	Q_UNUSED(e);
 
-	EmojiProvider emoji_provider_;
-};
+	if (panel_->underMouse())
+		return;
 
-#endif  // TEXT_INPUT_WIDGET_H
+	auto pos = QCursor::pos();
+	auto panel_geometry = panel_->geometry();
+	panel_geometry.adjust(0, 0, 0, vertical_distance_);
+
+	if (panel_geometry.contains(pos))
+		return;
+
+	panel_->fadeOut();
+}
